@@ -1,9 +1,7 @@
 package com.company;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +22,7 @@ public class Main {
      * Reads the file containing the calibration values and sum up the values.
      * @param args args.
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         initializeMap();
         try {
             System.out.println(calculateTotalValue());
