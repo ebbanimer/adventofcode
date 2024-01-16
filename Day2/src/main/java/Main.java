@@ -4,74 +4,64 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        startGame();
-    }
-
-    /**
-     * Reads file, and processes each line into the Map.
-     */
-    private static void startGame() {
-        int totalVal = 0;
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Main.class.getResourceAsStream("/input.txt"))));){
-            String line;
-            while ((line = br.readLine()) != null) {
-                totalVal = totalVal + calculateVals(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        int totalVal = startGame();
         System.out.println(totalVal);
     }
 
     /**
-     * Processes each game-round.
-     * @param line game-round.
+     * Reads the file and calculates the total value by processing each line in file.
+     * @return Total value.
      */
-    private static int calculateVals(String line){
-        String[] parts = line.split(":", 2);
-        String gameName = null;
-        String round;
-        if (parts.length == 2) {
-            gameName = parts[0].trim();
-            round = parts[1]; // get the round
-            if (!checkIfValidRound(gameName, round))
-                return 0;
-        }
+    private static int startGame() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Main.class.getResourceAsStream("/input.txt"))))){
+            return br.lines().mapToInt(Main::getValueFromRound).sum();
 
-        assert gameName != null;
-        List<String> gameId = List.of(gameName.split(" "));
-        return Integer.parseInt(gameId.get(1));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
+    /**
+     * Processes the game round.
+     * @param line The game round.
+     * @return The ID if it's a valid game.
+     */
+    private static int getValueFromRound(String line){
+        String[] parts = line.split(":", 2);
+        if (parts.length != 2) return 0;
 
+        String gameName = parts[0].trim();
+        String round = parts[1];
+
+        if (!checkIfValidRound(round)) return 0;
+        return Integer.parseInt(gameName.replaceAll("[^0-9]", ""));
+    }
+    
     /**
      * Check if game-round is valid.
      * @return ID of the game if valid.
-     * @param data
+     * @param data data
      */
-    private static boolean checkIfValidRound(String game, String data){
-        // Split the string into substrings within the , sign
-        String[] sublist = data.split(";");
+    private static boolean checkIfValidRound(String data) {
+        return Arrays.stream(data.split(";"))
+                .map(String::trim)
+                .allMatch(round -> Arrays.stream(round.split(","))
+                        .map(String::trim)
+                        .allMatch(Main::checkIfValidColorAndValue));
+    }
 
-        for (String s : sublist){
-            s = s.trim();
-            // Split the string into a list, so it should be; 5 red
-            List<String> list = List.of(s.split(","));
+    private static boolean checkIfValidColorAndValue(String str) {
+        String[] parts = str.split("\\s+");
+        if (parts.length != 2) return false;
 
-            for (String str : list){
-                str = str.trim();
-                List<String> colorVal = List.of(str.split(" "));
-                int val = Integer.parseInt(colorVal.get(0));
-                String color = colorVal.get(1);
-                if (!checkIfValid(color, val)){
-                    return false;
-                }
-
-            }
+        try {
+            int val = Integer.parseInt(parts[0]);
+            String color = parts[1];
+            return checkIfValid(color, val);
+        } catch (NumberFormatException e) {
+            return false;
         }
-
-        return true;
     }
 
     private static boolean checkIfValid(String color, int val){
