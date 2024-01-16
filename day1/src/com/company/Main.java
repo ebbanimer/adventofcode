@@ -61,7 +61,7 @@ public class Main {
      * @param str Line from file.
      * @return String containing first and last value of string.
      */
-    private static String partOne(String str){
+    public static String partOne(String str){
         // Remove all non-digits from the string.
         str = str.replaceAll("[^0-9]", ""); // regular expression
         int n = str.length();
@@ -75,7 +75,7 @@ public class Main {
      * @param str Line from file.
      * @return String containing first and last value of string.
      */
-    private static String partTwo(String str) {
+    public static String partTwo(String str) {
         Matcher matcher = p.matcher(str);
         String first = null;
         String last = null;
@@ -95,6 +95,8 @@ public class Main {
         // Verify whether the found value is a string or digits. If it is a string, retrieve the digit.
         first = map.containsKey(first) ? String.valueOf(map.get(first)) : first;
         last = map.containsKey(last) ? String.valueOf(map.get(last)) : last;
+
+        System.out.println(first + last);
 
         return first + last;
     }
